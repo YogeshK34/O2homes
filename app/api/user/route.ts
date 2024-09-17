@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from "../../db/index"
 import bcrypt from "bcrypt"
-import { use } from "react";
-
 
 // to add a User 
 export async function POST(req: NextRequest) {
