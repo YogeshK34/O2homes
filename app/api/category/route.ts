@@ -34,3 +34,24 @@ export async function POST(req: NextRequest) {
         })
     }
 }
+
+// to get all the categories
+export async function GET() {
+    try {
+        const getCategory = await client.category.findMany();
+
+        return NextResponse.json({
+            message: "All Plant Categories are mentioned below",
+            getCategory: getCategory
+        }, {
+            status: 200
+        })
+
+    } catch (e: any) {
+        return NextResponse.json({
+            message: e.message
+        }, {
+            status: 500
+        })
+    }
+}
