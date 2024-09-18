@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from "../../db/index"
 
+// add a Category
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

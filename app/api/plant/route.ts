@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from "../../db/index"
-import { url } from "inspector";
 
 // add Plant
 export async function POST(req: NextRequest) {
@@ -53,17 +52,22 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
     try {
-
         const body = await req.json();
 
-        // check the body if Plant Id is provided
         if (!body.id) {
             return NextResponse.json({
-                message: "Plant Id is required"
+                message: "Plant Id is required to update"
+            })
+        }
+
+        // Validate required fields
+        if (!body.name || !body.description || !body.price || !body.stock || !body.categoryId) {
+            return NextResponse.json({
+                message: "All fields (name, description, price, stock, categoryId) are required"
             }, {
                 status: 400
-            })
-        };
+            });
+        }
 
         const updatePlant = await client.plant.update({
             where: {
@@ -88,13 +92,54 @@ export async function PUT(req: NextRequest) {
             plant: updatePlant
         }, {
             status: 200
-        })
+        });
 
     } catch (e: any) {
         return NextResponse.json({
             message: e.message
         }, {
             status: 500
+        });
+    }
+}
+
+// to delete a Plant
+export async function DELETE(req: NextRequest) {
+    try {
+        const body = await req.json();
+
+        // ensure that ID is provided
+        if (!body.id) {
+            return NextResponse.json({
+                message: "Plant Id is require to delete"
+            }, {
+                status: 400
+            })
+        }
+
+        // delete related Image
+        await client.image.deleteMany({
+            where: {
+                plantId: body.id
+            }
+        })
+
+        const deletePlant = await client.plant.delete({
+            where: {
+                id: body.id
+            }
+        })
+
+        return NextResponse.json({
+            message: "Plant Deleted successfully",
+            deletePlant: deletePlant
+        }, {
+            status: 200
+        })
+
+    } catch (e: any) {
+        return NextResponse.json({
+            message: e.message
         })
     }
 }
